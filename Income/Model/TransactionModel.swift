@@ -29,3 +29,8 @@ struct Transaction: Identifiable {
 }
 
 
+extension Transaction: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State var transactions: [Transaction] = [
+    @State private var transactions: [Transaction] = [
         Transaction(
             title: "Sample One",
             amount: 10,
@@ -22,7 +22,8 @@ struct HomeView: View {
             date: Date()
         ),
     ]
-    
+    @State private var transactionToEdit: Transaction?
+
     fileprivate func floatingButton() -> some View {
         VStack {
             Spacer()
@@ -97,8 +98,13 @@ struct HomeView: View {
                     
                     List {
                         ForEach(transactions) { transaction in
-                            TransactionView(transaction: transaction)
-                                .listRowSeparator(.hidden)
+                            Button(action: {
+                                transactionToEdit = transaction
+                            }, label: {
+                                TransactionView(transaction: transaction)
+                                    .listRowSeparator(.hidden)
+                                    .foregroundStyle(.black)
+                            })
                         }
                     }
                     .scrollContentBackground(.hidden)
@@ -108,6 +114,14 @@ struct HomeView: View {
             }
             
             .navigationTitle("Income")
+            .navigationDestination(
+                item: $transactionToEdit,
+                destination: { transaction in
+                    AddTransactionView(
+                        transactionToEdit: transaction,
+                        transactions: $transactions
+                    )
+                })
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

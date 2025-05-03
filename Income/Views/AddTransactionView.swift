@@ -8,6 +8,7 @@ import SwiftUI
 
 struct AddTransactionView: View {
     
+    var transactionToEdit: Transaction?
     @Binding var transactions: [Transaction]
     
     @Environment(\.dismiss) var dismiss
@@ -65,11 +66,24 @@ struct AddTransactionView: View {
                     date: Date()
                 )
                 
-                transactions.append(transaction)
+                
+                if let transactionToEdit = transactionToEdit {
+                    // Update Transaction
+                    guard let indexOfTransaction = transactions.firstIndex(of: transactionToEdit) else {
+                        alertTitle = "Something went wrong"
+                        alertMessage = "Cannot update this transaction right now."
+                        showAlert = true
+                        return
+                    }
+                    transactions[indexOfTransaction] = transaction
+                } else {
+                    // Create Transaction
+                    transactions.append(transaction)
+                }
                 
                 dismiss()
             } label: {
-                Text("Create")
+                Text(transactionToEdit == nil ? "Create" : "Update")
                     .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -94,7 +108,13 @@ struct AddTransactionView: View {
         } message: {
             Text(alertMessage)
         }
-        
+        .onAppear {
+            if let transaction = transactionToEdit {
+                self.amount = transaction.amount
+                self.selectedTransactionType = transaction.type
+                self.transactionTitle = transaction.title
+            }
+        }
     }
 }
 
