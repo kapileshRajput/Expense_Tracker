@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct HomeView: View {
     @State var transactions: [Transaction] = [
         Transaction(
             title: "Sample One",
@@ -23,6 +23,20 @@ struct ContentView: View {
         ),
     ]
     
+    fileprivate func floatingButton() -> some View {
+        VStack {
+            Spacer()
+            NavigationLink(destination: AddTransactionView()) {
+                Text("+")
+                    .font(.largeTitle)
+                    .frame(width: 70, height: 70)
+                    .foregroundStyle(.white)
+                    .padding(.bottom, 4)
+            }
+            .background(Color.primaryLightGreen)
+            .clipShape(Circle())
+        }
+    }
     
     fileprivate func BalanceView() -> some View {
         ZStack {
@@ -74,20 +88,38 @@ struct ContentView: View {
     }
     
     var body: some View {
-        VStack {
-            BalanceView()
+        NavigationStack {
+            ZStack {
+                VStack {
+                    BalanceView()
+                    
+                    List {
+                        ForEach(transactions) { transaction in
+                            TransactionView(transaction: transaction)
+                                .listRowSeparator(.hidden)
+                        }
+                    }
+                    .scrollContentBackground(.hidden)
+                }
+                floatingButton()
+            }
             
-            List {
-                ForEach(transactions) { transaction in
-                    TransactionView(transaction: transaction)
-                        .listRowSeparator(.hidden)
+            .navigationTitle("Income")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundStyle(.black)
+                    }
+
                 }
             }
-            .scrollContentBackground(.hidden)
         }
     }
 }
 
 #Preview {
-    ContentView()
+    HomeView()
 }
