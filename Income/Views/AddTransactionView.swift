@@ -7,9 +7,17 @@
 import SwiftUI
 
 struct AddTransactionView: View {
+    
+    @Binding var transactions: [Transaction]
+    
+    @Environment(\.dismiss) var dismiss
+    
     @State private var amount: Double = 0.0
     @State private var selectedTransactionType: TransactionType = .expense
     @State private var transactionTitle: String = ""
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    @State private var showAlert: Bool = false
     
     var numberFormatter: NumberFormatter {
         let numberFormatter = NumberFormatter()
@@ -36,14 +44,30 @@ struct AddTransactionView: View {
                     }
                 }
             
-            TextField("Transaction Title", text: $transactionTitle)
+            TextField("Title", text: $transactionTitle)
                 .font(.system(size: 15))
                 .textFieldStyle(.roundedBorder)
                 .padding(.horizontal, 30)
                 .padding(.top)
             
             Button {
+                guard transactionTitle.count >= 2 else {
+                    alertTitle = "Invalid Title"
+                    alertMessage = "Title must be 2 or more characters long."
+                    showAlert = true
+                    return
+                }
                 
+                let transaction = Transaction(
+                    title: self.transactionTitle,
+                    amount: self.amount,
+                    type: self.selectedTransactionType,
+                    date: Date()
+                )
+                
+                transactions.append(transaction)
+                
+                dismiss()
             } label: {
                 Text("Create")
                     .font(.system(size: 15, weight: .bold))
@@ -60,9 +84,20 @@ struct AddTransactionView: View {
             Spacer()
         }
         .padding(.top)
+        .alert(alertTitle, isPresented: $showAlert) {
+            Button {
+                // Doing nothing results in dissmissing the alert. (That is the default behaviour"
+            } label: {
+                Text("OK")
+            }
+            
+        } message: {
+            Text(alertMessage)
+        }
+        
     }
 }
 
 #Preview {
-    AddTransactionView()
+    AddTransactionView(transactions: .constant([]))
 }

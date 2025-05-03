@@ -26,7 +26,9 @@ struct HomeView: View {
     fileprivate func floatingButton() -> some View {
         VStack {
             Spacer()
-            NavigationLink(destination: AddTransactionView()) {
+            NavigationLink(
+                destination: AddTransactionView(transactions: $transactions)
+            ) {
                 Text("+")
                     .font(.largeTitle)
                     .frame(width: 70, height: 70)
@@ -101,6 +103,7 @@ struct HomeView: View {
                     }
                     .scrollContentBackground(.hidden)
                 }
+                
                 floatingButton()
             }
             
@@ -113,7 +116,6 @@ struct HomeView: View {
                         Image(systemName: "gearshape.fill")
                             .foregroundStyle(.black)
                     }
-
                 }
             }
         }
