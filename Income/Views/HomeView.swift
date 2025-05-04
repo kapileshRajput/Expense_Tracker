@@ -8,20 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var transactions: [Transaction] = [
-        Transaction(
-            title: "Sample One",
-            amount: 10,
-            type: .expense,
-            date: Date()
-        ),
-        Transaction(
-            title: "Sample Two",
-            amount: 12,
-            type: .income,
-            date: Date()
-        ),
-    ]
+    @State private var transactions: [Transaction] = []
     @State private var transactionToEdit: Transaction?
 
     fileprivate func floatingButton() -> some View {
@@ -53,7 +40,7 @@ struct HomeView: View {
                         Text("BALANCE")
                             .font(.caption)
                             .foregroundStyle(.white)
-                        Text("2")
+                        Text(total)
                             .font(.system(size: 42, weight: .light))
                             .foregroundStyle(.white)
                     }
@@ -66,7 +53,7 @@ struct HomeView: View {
                     VStack(alignment: .leading) {
                         Text("Expense")
                             .font(.system(size: 15, weight: .semibold))
-                        Text("22")
+                        Text(expenses)
                             .font(.system(size: 15, weight: .regular))
                     }
                     .foregroundStyle(.white)
@@ -74,7 +61,7 @@ struct HomeView: View {
                     VStack(alignment: .leading) {
                         Text("Income")
                             .font(.system(size: 15, weight: .semibold))
-                        Text("22")
+                        Text(income)
                             .font(.system(size: 15, weight: .regular))
                     }
                     .foregroundStyle(.white)
@@ -88,6 +75,58 @@ struct HomeView: View {
         .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
         .frame(height: 150)
         .padding(.horizontal)
+    }
+    
+    var expenses: String {
+        var sumExpenses: Double = 0
+        for transaction in transactions {
+            if transaction.type == .expense {
+                sumExpenses += transaction.amount
+            }
+        }
+        
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .currency
+        numberFormatter.maximumFractionDigits = 2
+        
+        
+        return numberFormatter.string(from: NSNumber(value: sumExpenses)) ?? ""
+    }
+    
+    var income: String {
+        var sumIncome: Double = 0
+        for transaction in transactions {
+            if transaction.type == .income {
+                sumIncome += transaction.amount
+            }
+        }
+        
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .currency
+        numberFormatter.maximumFractionDigits = 2
+        
+        
+        return numberFormatter.string(from: NSNumber(value: sumIncome)) ?? ""
+    }
+    
+    var total: String {
+        var total: Double = 0
+        
+        for transaction in transactions {
+            switch transaction.type {
+            case .income:
+                total += transaction.amount
+            case .expense:
+                total -= transaction.amount
+            }
+        }
+        
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .currency
+        numberFormatter.maximumFractionDigits = 2
+        
+        
+        return numberFormatter.string(from: NSNumber(value: total)) ?? ""
     }
     
     var body: some View {
