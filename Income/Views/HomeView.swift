@@ -8,31 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var transactions: [Transaction] = []
-    @State private var transactionToEdit: Transaction?
-    
-    private var expenses: String {
-        let sumExpenses: Double = transactions.filter({ $0.type == .expense }).reduce(
-            0,
-            {$0 + $1.amount
-            })
-        
-        return format(amount: sumExpenses)
-    }
-    
-    private var income: String {
-        let sumIncome: Double = transactions.filter({ $0.type == .income }).reduce(0, {$0 + $1.amount})
-        
-        return format(amount: sumIncome)
-    }
-    
-    private var total: String {
-        let sumExpenses: Double = transactions.filter({ $0.type == .expense}).reduce(0, {$0 + $1.amount})
-        let sumIncome: Double = transactions.filter({ $0.type == .income }).reduce(0, {$0 + $1.amount})
-        let total: Double = sumIncome - sumExpenses
-        
-        return format(amount: total)
-    }
+    @StateObject var viewModel: HomeViewModel = HomeViewModel()
     
     var body: some View {
         NavigationStack {
@@ -41,16 +17,16 @@ struct HomeView: View {
                     BalanceView()
                     
                     List {
-                        ForEach(transactions) { transaction in
+                        ForEach(viewModel.transactions) { transaction in
                             Button(action: {
-                                transactionToEdit = transaction
+                                viewModel.transactionToEdit = transaction
                             }, label: {
                                 TransactionView(transaction: transaction)
                                     .listRowSeparator(.hidden)
                                     .foregroundStyle(.black)
                             })
                         }
-                        .onDelete(perform: delete)
+                        .onDelete(perform: viewModel.delete)
                     }
                     .scrollContentBackground(.hidden)
                 }
@@ -60,11 +36,11 @@ struct HomeView: View {
             
             .navigationTitle("Income")
             .navigationDestination(
-                item: $transactionToEdit,
+                item: $viewModel.transactionToEdit,
                 destination: { transaction in
-                    AddTransactionView(
+                    AddUpdateTransactionView(
                         transactionToEdit: transaction,
-                        transactions: $transactions
+                        transactions: $viewModel.transactions
                     )
                 })
             .toolbar {
@@ -84,7 +60,7 @@ struct HomeView: View {
         VStack {
             Spacer()
             NavigationLink(
-                destination: AddTransactionView(transactions: $transactions)
+                destination: AddUpdateTransactionView(transactions: $viewModel.transactions)
             ) {
                 Text("+")
                     .font(.largeTitle)
@@ -109,7 +85,7 @@ struct HomeView: View {
                         Text("BALANCE")
                             .font(.caption)
                             .foregroundStyle(.white)
-                        Text(total)
+                        Text(viewModel.total)
                             .font(.system(size: 42, weight: .light))
                             .foregroundStyle(.white)
                     }
@@ -122,7 +98,7 @@ struct HomeView: View {
                     VStack(alignment: .leading) {
                         Text("Expense")
                             .font(.system(size: 15, weight: .semibold))
-                        Text(expenses)
+                        Text(viewModel.expenses)
                             .font(.system(size: 15, weight: .regular))
                     }
                     .foregroundStyle(.white)
@@ -130,7 +106,7 @@ struct HomeView: View {
                     VStack(alignment: .leading) {
                         Text("Income")
                             .font(.system(size: 15, weight: .semibold))
-                        Text(income)
+                        Text(viewModel.income)
                             .font(.system(size: 15, weight: .regular))
                     }
                     .foregroundStyle(.white)
@@ -144,17 +120,6 @@ struct HomeView: View {
         .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
         .frame(height: 150)
         .padding(.horizontal)
-    }
-    
-    fileprivate func format(amount: Double) -> String {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .currency
-        numberFormatter.maximumFractionDigits = 2
-        return numberFormatter.string(from: NSNumber(value: amount)) ?? ""
-    }
-    
-    fileprivate func delete(at offsets: IndexSet) {
-        transactions.remove(atOffsets: offsets)
     }
 }
 
