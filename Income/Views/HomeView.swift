@@ -10,7 +10,75 @@ import SwiftUI
 struct HomeView: View {
     @State private var transactions: [Transaction] = []
     @State private var transactionToEdit: Transaction?
-
+    
+    private var expenses: String {
+        let sumExpenses: Double = transactions.filter({ $0.type == .expense }).reduce(
+            0,
+            {$0 + $1.amount
+            })
+        
+        return format(amount: sumExpenses)
+    }
+    
+    private var income: String {
+        let sumIncome: Double = transactions.filter({ $0.type == .income }).reduce(0, {$0 + $1.amount})
+        
+        return format(amount: sumIncome)
+    }
+    
+    private var total: String {
+        let sumExpenses: Double = transactions.filter({ $0.type == .expense}).reduce(0, {$0 + $1.amount})
+        let sumIncome: Double = transactions.filter({ $0.type == .income }).reduce(0, {$0 + $1.amount})
+        let total: Double = sumIncome - sumExpenses
+        
+        return format(amount: total)
+    }
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                VStack {
+                    BalanceView()
+                    
+                    List {
+                        ForEach(transactions) { transaction in
+                            Button(action: {
+                                transactionToEdit = transaction
+                            }, label: {
+                                TransactionView(transaction: transaction)
+                                    .listRowSeparator(.hidden)
+                                    .foregroundStyle(.black)
+                            })
+                        }
+                    }
+                    .scrollContentBackground(.hidden)
+                }
+                
+                floatingButton()
+            }
+            
+            .navigationTitle("Income")
+            .navigationDestination(
+                item: $transactionToEdit,
+                destination: { transaction in
+                    AddTransactionView(
+                        transactionToEdit: transaction,
+                        transactions: $transactions
+                    )
+                })
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundStyle(.black)
+                    }
+                }
+            }
+        }
+    }
+    
     fileprivate func floatingButton() -> some View {
         VStack {
             Spacer()
@@ -77,101 +145,11 @@ struct HomeView: View {
         .padding(.horizontal)
     }
     
-    var expenses: String {
-        var sumExpenses: Double = 0
-        for transaction in transactions {
-            if transaction.type == .expense {
-                sumExpenses += transaction.amount
-            }
-        }
-        
+    fileprivate func format(amount: Double) -> String {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
         numberFormatter.maximumFractionDigits = 2
-        
-        
-        return numberFormatter.string(from: NSNumber(value: sumExpenses)) ?? ""
-    }
-    
-    var income: String {
-        var sumIncome: Double = 0
-        for transaction in transactions {
-            if transaction.type == .income {
-                sumIncome += transaction.amount
-            }
-        }
-        
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .currency
-        numberFormatter.maximumFractionDigits = 2
-        
-        
-        return numberFormatter.string(from: NSNumber(value: sumIncome)) ?? ""
-    }
-    
-    var total: String {
-        var total: Double = 0
-        
-        for transaction in transactions {
-            switch transaction.type {
-            case .income:
-                total += transaction.amount
-            case .expense:
-                total -= transaction.amount
-            }
-        }
-        
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .currency
-        numberFormatter.maximumFractionDigits = 2
-        
-        
-        return numberFormatter.string(from: NSNumber(value: total)) ?? ""
-    }
-    
-    var body: some View {
-        NavigationStack {
-            ZStack {
-                VStack {
-                    BalanceView()
-                    
-                    List {
-                        ForEach(transactions) { transaction in
-                            Button(action: {
-                                transactionToEdit = transaction
-                            }, label: {
-                                TransactionView(transaction: transaction)
-                                    .listRowSeparator(.hidden)
-                                    .foregroundStyle(.black)
-                            })
-                        }
-                    }
-                    .scrollContentBackground(.hidden)
-                }
-                
-                floatingButton()
-            }
-            
-            .navigationTitle("Income")
-            .navigationDestination(
-                item: $transactionToEdit,
-                destination: { transaction in
-                    AddTransactionView(
-                        transactionToEdit: transaction,
-                        transactions: $transactions
-                    )
-                })
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        
-                    } label: {
-                        Image(systemName: "gearshape.fill")
-                            .foregroundStyle(.black)
-                    }
-                }
-            }
-        }
+        return numberFormatter.string(from: NSNumber(value: amount)) ?? ""
     }
 }
 
