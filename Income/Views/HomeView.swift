@@ -50,6 +50,7 @@ struct HomeView: View {
                                     .foregroundStyle(.black)
                             })
                         }
+                        .onDelete(perform: delete)
                     }
                     .scrollContentBackground(.hidden)
                 }
@@ -150,6 +151,10 @@ struct HomeView: View {
         numberFormatter.numberStyle = .currency
         numberFormatter.maximumFractionDigits = 2
         return numberFormatter.string(from: NSNumber(value: amount)) ?? ""
+    }
+    
+    fileprivate func delete(at offsets: IndexSet) {
+        transactions.remove(atOffsets: offsets)
     }
 }
 
