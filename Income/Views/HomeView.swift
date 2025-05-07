@@ -46,12 +46,15 @@ struct HomeView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        
+                        viewModel.showSettingsView = true
                     } label: {
                         Image(systemName: "gearshape.fill")
                             .foregroundStyle(.black)
                     }
                 }
+            }
+            .sheet(isPresented: $viewModel.showSettingsView) {
+                SettingsView()
             }
         }
     }

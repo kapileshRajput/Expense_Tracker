@@ -11,6 +11,7 @@ class HomeViewModel: ObservableObject {
     
     @Published var transactions: [Transaction] = []
     @Published var transactionToEdit: Transaction?
+    @Published var showSettingsView: Bool = false
     
     var expenses: String {
         let sumExpenses: Double = transactions.filter({ $0.type == .expense }).reduce(
