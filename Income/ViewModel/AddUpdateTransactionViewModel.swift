@@ -23,9 +23,12 @@ class AddUpdateTransactionViewModel: ObservableObject {
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
     
+    @AppStorage("currency") var currency: Currency = .ind_rupee
+    
     var numberFormatter: NumberFormatter {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
+        numberFormatter.locale = currency.locale
         return numberFormatter
     }
 }

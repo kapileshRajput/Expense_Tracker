@@ -13,6 +13,17 @@ class HomeViewModel: ObservableObject {
     @Published var transactionToEdit: Transaction?
     @Published var showSettingsView: Bool = false
     
+    @AppStorage("orderDecending") var orderDecending: Bool = false
+    @AppStorage("currency") var currency: Currency = .ind_rupee
+    @AppStorage("filterMinimum") var filterMinimum: Double = 0.0
+    
+    var displayTransactions: [Transaction] {
+        let sortedTransactions = orderDecending ?  transactions.sorted(by: { $0.date < $1.date
+        }) : transactions.sorted(by: { $0.date > $1.date })
+        let filteredTransactions = sortedTransactions.filter({ $0.amount > filterMinimum })
+        return filteredTransactions
+    }
+    
     var expenses: String {
         let sumExpenses: Double = transactions.filter({ $0.type == .expense }).reduce(
             0,
@@ -40,6 +51,7 @@ class HomeViewModel: ObservableObject {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
         numberFormatter.maximumFractionDigits = 2
+        numberFormatter.locale = currency.locale
         return numberFormatter.string(from: NSNumber(value: amount)) ?? ""
     }
     

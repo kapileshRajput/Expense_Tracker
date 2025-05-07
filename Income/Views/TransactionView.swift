@@ -8,6 +8,7 @@ import SwiftUI
 
 struct TransactionView: View {
     let transaction: Transaction
+    @AppStorage("currency") var currency: Currency = .ind_rupee
     
     var body: some View {
         VStack {
@@ -34,7 +35,7 @@ struct TransactionView: View {
                         
                         Spacer()
                         
-                        Text(transaction.displayAmount)
+                        Text(transaction.displayAmount(currency: currency))
                             .font(.system(size: 15, weight: .bold))
                     }
                     

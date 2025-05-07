@@ -17,7 +17,7 @@ struct HomeView: View {
                     BalanceView()
                     
                     List {
-                        ForEach(viewModel.transactions) { transaction in
+                        ForEach(viewModel.displayTransactions) { transaction in
                             Button(action: {
                                 viewModel.transactionToEdit = transaction
                             }, label: {

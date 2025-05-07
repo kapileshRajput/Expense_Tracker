@@ -17,13 +17,15 @@ struct Transaction: Identifiable {
     var displayDate: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .full
+        dateFormatter.timeStyle = .short
         return dateFormatter.string(from: date)
     }
-    var displayAmount: String {
+  
+    func displayAmount(currency: Currency) -> String {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
         numberFormatter.maximumFractionDigits = 2
-        numberFormatter.locale = .current
+        numberFormatter.locale = currency.locale
         return numberFormatter.string(from: amount as NSNumber) ?? ""
     }
 }

@@ -8,14 +8,15 @@ import SwiftUI
 
 struct SettingsView: View {
     
-    @State private var orderDecending: Bool = false
-    @State private var currency: Currency = .ind_rupee
-    @State private var filterMinimum: Double = 0.0
+    @AppStorage("orderDecending") var orderDecending: Bool = false
+    @AppStorage("currency") var currency: Currency = .ind_rupee
+    @AppStorage("filterMinimum") var filterMinimum: Double = 0.0
     
     var numberFormatter: NumberFormatter {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
         numberFormatter.maximumFractionDigits = 2
+        numberFormatter.locale = currency.locale
         return numberFormatter
     }
     
@@ -23,7 +24,7 @@ struct SettingsView: View {
         NavigationStack {
             VStack {
                 List {
-                    Toggle("Order", isOn: $orderDecending)
+                    Toggle("Order \(orderDecending ? "(Earliest)" : "(Latest)")", isOn: $orderDecending)
                     
                     Picker("Currency", selection: $currency) {
                         ForEach(Currency.allCases, id: \.self) { currency in
@@ -54,7 +55,7 @@ struct SettingsView: View {
 }
 
 
-enum Currency: CaseIterable {
+enum Currency: Int, CaseIterable {
     case ind_rupee, usd, pound
     
     var title: String {
@@ -65,6 +66,17 @@ enum Currency: CaseIterable {
             "USD"
         case .pound:
             "Pound"
+        }
+    }
+    
+    var locale: Locale {
+        switch self {
+        case .ind_rupee:
+                .init(identifier: "en_IN")
+        case .usd:
+                .init(identifier: "en_US")
+        case .pound:
+                .init(identifier: "en_GB")
         }
     }
 }
