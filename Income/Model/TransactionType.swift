@@ -9,7 +9,7 @@
 import Foundation
 
 // Using "CaseIterable" so, we can use our enum as an array in a ForEach loop.
-enum TransactionType: String, CaseIterable, Identifiable {
+enum TransactionType: Int, CaseIterable, Identifiable {
     case income, expense
     var id: Self { self } // Using this computed property so we can conform to Identifiable & use our enum with ForEach loop without having to add the "id" parameter.
     
