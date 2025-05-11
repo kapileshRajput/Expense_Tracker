@@ -56,6 +56,22 @@ class HomeViewModel: ObservableObject {
     }
     
     func delete(at offsets: IndexSet) {
-        transactions.remove(atOffsets: offsets)
+        offsets.forEach { index in
+            let transaction = transactions[index]
+            CoreDataManager.shared.delete(transaction: transaction)
+        }
+        fetchTransactions()
+    }
+    
+    func fetchTransactions() {
+        transactions = CoreDataManager.shared.fetch().map({
+             Transaction(
+                id: $0.wrappedId,
+                title: $0.wrappedTitle,
+                amount: $0.amount,
+                type: $0.wrappedTransactionType,
+                date: $0.wrappedDate
+            )
+        })
     }
 }

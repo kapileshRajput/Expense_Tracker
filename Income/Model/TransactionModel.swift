@@ -9,11 +9,26 @@
 import Foundation
 
 struct Transaction: Identifiable {
-    let id: UUID = UUID()
+    var id: UUID
     let title: String
     let amount: Double
     let type: TransactionType
     let date: Date
+    
+    init(
+        id: UUID = UUID(),
+        title: String,
+        amount: Double,
+        type: TransactionType,
+        date: Date
+    ) {
+        self.id = id
+        self.title = title
+        self.amount = amount
+        self.type = type
+        self.date = date
+    }
+    
     var displayDate: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .full

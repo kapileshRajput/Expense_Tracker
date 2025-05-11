@@ -8,13 +8,10 @@
 import SwiftUI
 
 @main
-struct IncomeApp: App {
-    let dataManger: DataManager = DataManager.shared
-    
+struct IncomeApp: App {    
     var body: some Scene {
         WindowGroup {
             HomeView()
-                .environment(\.managedObjectContext, dataManger.container.viewContext)
         }
     }
 }

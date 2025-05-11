@@ -57,7 +57,7 @@ struct AddUpdateTransactionView: View {
                     return
                 }
                 
-                let transaction = Transaction(
+                var transaction = Transaction(
                     title: viewModel.transactionTitle,
                     amount: viewModel.amount,
                     type: viewModel.selectedTransactionType,
@@ -67,20 +67,11 @@ struct AddUpdateTransactionView: View {
                 
                 if let transactionToEdit = viewModel.transactionToEdit {
                     // Update Transaction
-                    guard let indexOfTransaction = viewModel.transactions.wrappedValue.firstIndex(of: transactionToEdit) else {
-                        viewModel.alertTitle = "Something went wrong"
-                        viewModel.alertMessage = "Cannot update this transaction right now."
-                        viewModel.showAlert = true
-                        return
-                    }
-                    viewModel.transactions
-                        .wrappedValue[indexOfTransaction] = transaction
-                    
-                    print("Came in here!!, index: \(indexOfTransaction)")
+                    transaction.id = transactionToEdit.id
+                    CoreDataManager.shared.update(transaction: transaction)
                 } else {
-                    // Create Transaction
-                    viewModel.transactions.wrappedValue.append(transaction)
-                    print("Came in here 1!!")
+                    // Add Transaction
+                    viewModel.add(transaction: transaction)
                 }
                 
                 dismiss()
