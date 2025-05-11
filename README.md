@@ -2,6 +2,7 @@
 
 Income is a lightweight and elegant iOS application designed to help users track their daily income and expenses effortlessly. Built entirely in Swift using SwiftUI, the app features a clean interface, real-time updates, and intuitive user interactions.
 
+![App Demo](Assets/demo.gif)
 ![App Demo](Assets/demo.mp4)
 
 ---
