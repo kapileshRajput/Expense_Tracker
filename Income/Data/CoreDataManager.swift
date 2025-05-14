@@ -22,11 +22,19 @@ class CoreDataManager {
         }
     }
     
-    func fetch() -> [TransactionItem] {
+    func fetch() -> [Transaction] {
         let request = NSFetchRequest<TransactionItem>(entityName: "TransactionItem")
         
         do{
-            return try container.viewContext.fetch(request)
+            return try container.viewContext.fetch(request).map({
+                Transaction(
+                   id: $0.wrappedId,
+                   title: $0.wrappedTitle,
+                   amount: $0.amount,
+                   type: $0.wrappedTransactionType,
+                   date: $0.wrappedDate
+               )
+           })
         } catch let error {
             print("Error fetching: \(error)")
         }
